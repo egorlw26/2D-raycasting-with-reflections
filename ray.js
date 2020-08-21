@@ -1,7 +1,7 @@
 class Ray{
-    constructor(x1, y1, x2, y2)
+    constructor(pos, x2, y2)
     {
-        this.orig = createVector(x1, y1);
+        this.orig = pos;
         this.dir = createVector(x2, y2);    
     }
 
@@ -46,10 +46,31 @@ class Ray{
             return;
     }
 
+    nearestSegment(segments)
+    {
+        let bestDistance = Infinity;
+        let bestPoint = this.orig + this.dir * bestDistance;
+
+        for(let segment of segments)
+        {
+            let pt = this.intersectSegment(segment);
+            if(pt != null)
+            {
+                let dist = this.orig.dist(pt);
+                if(dist <= bestDistance)
+                {
+                    bestDistance = dist;
+                    bestPoint = pt;
+                }
+            }
+        }
+        return bestPoint;
+    }
+
     show()
     {
         stroke(255);
         line(this.orig.x, this.orig.y, 
-            this.orig.x + this.dir.x * 20, this.orig.y + this.dir.y * 20);
+            this.orig.x + this.dir.x * 10, this.orig.y + this.dir.y * 10);
     }
 }
