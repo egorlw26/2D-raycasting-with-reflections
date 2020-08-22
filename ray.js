@@ -37,7 +37,7 @@ class Ray{
         const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;  
         const u = - ((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
 
-        if(t >= 0 && u >=0 && u <= 1)
+        if(t > 0.1 && u >=0 && u <= 1)
         {
             let pt = createVector(this.orig.x + this.dir.x * t, this.orig.y + this.dir.y * t);
             return pt;
@@ -49,6 +49,7 @@ class Ray{
     nearestSegment(segments)
     {
         let bestDistance = Infinity;
+        let nearestSeg = null;
         let bestPoint = this.orig + this.dir * bestDistance;
 
         for(let segment of segments)
@@ -61,10 +62,33 @@ class Ray{
                 {
                     bestDistance = dist;
                     bestPoint = pt;
+                    nearestSeg = segment;
                 }
             }
         }
-        return bestPoint;
+        return [bestPoint, nearestSeg];
+    }
+
+    calculateReflectionRayOverSegment(pointAndSegment)
+    {
+        let copy = pointAndSegment.slice();
+        let r = new Ray(copy[0], this.dir.x, this.dir.y);
+        return rayReflactionOverSegment(r, copy[1]);
+    }
+
+    calculateReflections(segments, iterations)
+    {
+        let currRay = this;
+        let resultRays = [];
+        for(let i = 0; i < iterations; ++i)
+        {
+            let nRay = currRay.calculateReflectionRayOverSegment(currRay.nearestSegment(segments));
+            if(nRay == null)
+                break;
+            resultRays.push([nRay, nRay.nearestSegment(segments)]);
+            currRay = nRay;
+        }
+        return resultRays;
     }
 
     show()
