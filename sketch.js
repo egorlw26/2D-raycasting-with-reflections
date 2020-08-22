@@ -40,12 +40,9 @@ function draw()
     testRay.stretchTo(pt.x, pt.y); 
 
     let reflRays = testRay.calculateReflections(segments, 10);
-    for(let data of reflRays)
+    for(let ray of reflRays)
     {
-        let r = data[0];
-        let pt = data[1][0];
-        r.stretchTo(pt.x, pt.y);
-        r.show();
+        ray.show();
     }
 
     for(let segment of segments)
@@ -62,13 +59,11 @@ function keyPressed()
 {
     if(keyCode === LEFT_ARROW)
     {
-        p.rotate(-5);
-        console.log("ROTATING A");
+        p.rotate(-10);
     }
     if(keyCode === RIGHT_ARROW)
     {
-        p.rotate(5);
-        console.log("ROTATING D");
+        p.rotate(10);
     }
 }
 

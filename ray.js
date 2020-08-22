@@ -69,26 +69,36 @@ class Ray{
         return [bestPoint, nearestSeg];
     }
 
-    calculateReflectionRayOverSegment(pointAndSegment)
+    calculateReflectionRayDirOverSegment(segment)
     {
-        let copy = pointAndSegment.slice();
-        let r = new Ray(copy[0], this.dir.x, this.dir.y);
-        return rayReflactionOverSegment(r, copy[1]);
+        let s = segment;
+        let segDir = p5.Vector.sub(s.b, s.a).normalize();
+        let dotValue = p5.Vector.dot(this.dir, segDir);
+        let nRayDir = p5.Vector.sub(p5.Vector.mult(segDir, 2*dotValue), this.dir);
+
+        return nRayDir;
     }
 
     calculateReflections(segments, iterations)
     {
         let currRay = this;
-        let resultRays = [];
+        let resRays = [];
         for(let i = 0; i < iterations; ++i)
         {
-            let nRay = currRay.calculateReflectionRayOverSegment(currRay.nearestSegment(segments));
-            if(nRay == null)
+            let intPointandSeg = currRay.nearestSegment(segments);
+            let pt = intPointandSeg[0];
+            let seg = intPointandSeg[1];
+
+            if(seg == null)
                 break;
-            resultRays.push([nRay, nRay.nearestSegment(segments)]);
+                
+            let nRayDir = currRay.calculateReflectionRayDirOverSegment(seg);
+            let nRay = new Ray(pt, nRayDir.x, nRayDir.y);
+            resRays.push(nRay);
             currRay = nRay;
         }
-        return resultRays;
+
+        return resRays;
     }
 
     show()
