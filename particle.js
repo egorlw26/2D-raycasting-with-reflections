@@ -1,21 +1,20 @@
 class Particle
 {
-    constructor(angleIncreaseStep)
+    constructor(viewAngle)
     {
         this.pos = createVector(width/2, height/2);
         this.rays = [];
-        this.reflectionPreData = [];
-        this.angleIncreaseStep = angleIncreaseStep;
+        this.viewAngle = viewAngle;
         this.startAngle = 0;
 
         this.fillRays();       
     }
 
-    updateIncreaseStep(nIncreaseStep)
+    updateViewAngle(nViewAngle)
     {
-        if(this.angleIncreaseStep != nIncreaseStep)
+        if(this.viewAngle != nViewAngle)
         {
-            this.angleIncreaseStep = nIncreaseStep;
+            this.viewAngle = nViewAngle;
             this.fillRays();
         }
         
@@ -29,7 +28,7 @@ class Particle
     fillRays()
     {
         this.rays = [];
-        for(let angle = this.startAngle; angle <= this.startAngle + 45; angle += this.angleIncreaseStep)
+        for(let angle = this.startAngle; angle <= this.startAngle + this.viewAngle; angle += 1)
         {
             this.rays.push(new Ray(this.pos, 
                 Math.cos(radians(angle)), Math.sin(radians(angle))));
@@ -40,15 +39,10 @@ class Particle
     {
         for(let ray of this.rays)
         {
-            let tuple = ray.nearestSegment(segments); 
-            let pt = tuple[0];            
+            let pt = ray.nearestSegment(segments)[0];            
             if(pt != null)
             {
-                ray.stretchTo(pt.x, pt.y);
-                
-                let intersectedSegment = tuple[1];
-                let nRay = new Ray(pt, ray.dir.x, ray.dir.y);
-                this.reflectionPreData.push([nRay, intersectedSegment]);
+                ray.stretchTo(pt.x, pt.y);                
             }
         }
     }

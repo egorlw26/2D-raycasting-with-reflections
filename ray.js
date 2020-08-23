@@ -17,6 +17,11 @@ class Ray{
         stroke(255);
         line(this.orig.x, this.orig.y, x, y);
     }
+    stretchToWithColor(x, y, colorIntens)
+    {
+        stroke(colorIntens);
+        line(this.orig.x, this.orig.y, x, y);
+    }
 
     intersectSegment(segment)
     {
@@ -91,7 +96,7 @@ class Ray{
 
             if(seg == null)
                 break;
-                
+
             let nRayDir = currRay.calculateReflectionRayDirOverSegment(seg);
             let nRay = new Ray(pt, nRayDir.x, nRayDir.y);
             resRays.push(nRay);
@@ -99,6 +104,27 @@ class Ray{
         }
 
         return resRays;
+    }
+
+    showReflections(segments, iterations)
+    {
+        if(iterations == 0)
+            return;
+
+        let intensStep = 255/(iterations + 1);
+        let refRays = this.calculateReflections(segments, iterations);
+
+        if(refRays.length == 0)
+            return;
+            
+        for(let i = 0; i < refRays.length - 1; ++i)
+        {
+            refRays[i].stretchToWithColor(refRays[i+1].orig.x, refRays[i+1].orig.y, 255 - i*intensStep);
+        }
+
+        let lastRay = refRays[refRays.length -1]; 
+        let finPt = lastRay.nearestSegment(segments)[0];
+        lastRay.stretchToWithColor(finPt.x, finPt.y, 255 -(refRays.length - 1)*intensStep);
     }
 
     show()
